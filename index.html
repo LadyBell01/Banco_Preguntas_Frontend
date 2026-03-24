@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduRadio ODS 4 - Banco de Preguntas</title>
+    <!-- Importar CSS principal -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="title-area">
+                <h1>🎙️ EduRadio ODS 4</h1>
+                <p>Plataforma para Radio Educativa Rural</p>
+            </div>
+
+            <!-- Controles de Accesibilidad (A11y) -->
+            <div class="a11y-controls" aria-label="Controles de accesibilidad">
+                <button id="btn-text-decrease" aria-label="Disminuir tamaño de texto">A-</button>
+                <button id="btn-text-increase" aria-label="Aumentar tamaño de texto">A+</button>
+                <button id="btn-contrast" aria-label="Alternar alto contraste">Alto Contraste</button>
+            </div>
+        </div>
+
+        <nav class="main-nav" aria-label="Navegación principal">
+            <ul id="nav-menu">
+                <li><a href="#inicio" class="active">Inicio</a></li>
+                <li><a href="#preguntas">Banco de Preguntas</a></li>
+                <li><a href="#guiones">Generador de Guiones</a></li>
+                <li><a href="#offline">Recursos Offline</a></li>
+                <li><a href="#ods4">Sobre ODS 4</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+
+        <!-- Breadcrumbs (Migas de Pan) -->
+        <div class="breadcrumbs">
+            <span aria-hidden="true">📍 Estás en: </span>
+            <span id="breadcrumb-current">Inicio</span>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- SECCIÓN 1: Inicio -->
+        <section id="inicio" class="page-section active">
+            <h2>Bienvenido a EduRadio</h2>
+            <p>Una herramienta diseñada especialmente para educadores y locutores comunitarios, orientada a superar las
+                barreras de conectividad rural a través del medio más democrático: <strong>la radio</strong>.</p>
+
+            <div class="card ods-justification">
+                <h3>🌍 Impacto y Justificación ODS 4</h3>
+                <p>Este proyecto fomenta la <strong>Educación de Calidad (ODS 4)</strong>. En regiones con baja
+                    cobertura de internet, la radio tradicional sigue siendo esencial. Esta plataforma ofrece un banco
+                    descentralizado de herramientas offline para construir contenido pedagógico de alta calidad,
+                    garantizando un aprendizaje equitativo para las comunidades más remotas.</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: Banco de Preguntas (API Externa) -->
+        <section id="preguntas" class="page-section hidden">
+            <h2>Banco de Preguntas Cultura General</h2>
+            <p>Enriquece tus programas de radio con preguntas educativas obtenidas de fuentes globales (Open Trivia DB).
+            </p>
+
+            <button id="load-questions-btn" class="primary-btn">🔄 Cargar Nuevas Preguntas (Requiere Internet)</button>
+
+            <div id="api-status" class="status-message"></div>
+            <div id="questions-grid" class="grid-container">
+                <!-- Las preguntas generadas por JavaScript mediante la API aparecerán aquí -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: Generador de Guiones Radiales -->
+        <section id="guiones" class="page-section hidden">
+            <h2>Generador de Guiones Radiales</h2>
+            <p>Escriba sus guiones para programas educativos. Toda esta información se guardará localmente
+                (LocalStorage) permitiéndole trabajar sin conexión a Internet.</p>
+
+            <form id="script-form" class="standard-form">
+                <div class="form-group">
+                    <label for="script-title">Título del Programa / Emisión</label>
+                    <input type="text" id="script-title" required placeholder="Ej: Episodio 3 - Historia Antigua">
+                </div>
+                <div class="form-group">
+                    <label for="script-content">Contenido del Guion</label>
+                    <textarea id="script-content" rows="6" required
+                        placeholder="Escriba aquí los detalles del guion..."></textarea>
+                </div>
+                <button type="submit" class="primary-btn">💾 Guardar Guion Localmente</button>
+            </form>
+            <div id="script-message" class="message hidden"></div>
+        </section>
+
+        <!-- SECCIÓN 4: Recursos Offline -->
+        <section id="offline" class="page-section hidden">
+            <h2>📦 Recursos Offline Guardados</h2>
+            <p>Esta sección almacena sus guiones guardados en la memoria de su navegador. Siguen disponibles cuando le
+                falte conexión de red.</p>
+
+            <div id="offline-grid" class="grid-container">
+                <!-- Los recursos offline renderizados mediante JS aparecerán aquí -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: Sobre el ODS 4 -->
+        <section id="ods4" class="page-section hidden">
+            <h2>Sobre el ODS 4: Educación de Calidad</h2>
+            <div class="card bg-green">
+                <h3>Garantizar una educación inclusiva, equitativa y de calidad</h3>
+                <p>La consecución de una educación de calidad es la base para mejorar la vida de las personas y el
+                    desarrollo sostenible.</p>
+                <p>Nuestra plataforma impacta en varias metas:</p>
+                <ul>
+                    <li>Asegurar que las herramientas de aprendizaje lleguen a las poblaciones vulnerables.</li>
+                    <li>Capacitación del personal docente y locutores rurales dándoles herramientas offline.</li>
+                    <li>Utilización de tecnologías de bajo costo (radiodifusión) para reducir la brecha digital.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 6: Contacto (Formulario + Validaciones Regex) -->
+        <section id="contacto" class="page-section hidden">
+            <h2>Contáctenos</h2>
+            <p>¿Gusta proponer una nueva sección o tiene problemas con la herramienta?</p>
+
+            <form id="contact-form" class="standard-form" novalidate>
+                <div class="form-group">
+                    <label for="contact-name">Nombre Completo</label>
+                    <input type="text" id="contact-name" placeholder="Ej: Ana Maria Sanchez" required>
+                    <span class="error-text" id="error-name">Ingrese un nombre válido (solo letras, mín. 3
+                        caracteres).</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact-email">Correo Electrónico</label>
+                    <input type="email" id="contact-email" placeholder="profesora@escuela.edu" required>
+                    <span class="error-text" id="error-email">Ingrese un formato de correo electrónico válido.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact-phone">Teléfono (Opcional - Formato Internacional)</label>
+                    <input type="tel" id="contact-phone" placeholder="+57 301 222 3333">
+                    <span class="error-text" id="error-phone">Debe contener código de país (ej. +57) seguido de
+                        números.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact-message">Su Mensaje</label>
+                    <textarea id="contact-message" rows="4" required></textarea>
+                    <span class="error-text" id="error-msg">El mensaje no puede estar vacío y debe tener al menos 10
+                        caracteres.</span>
+                </div>
+
+                <button type="submit" class="primary-btn">📨 Enviar Mensaje</button>
+            </form>
+            <div id="form-successbox" class="message hidden"></div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Mini-Mapa del sitio para accesibilidad -->
+            <div class="footer-map">
+                <h3>📌 Mapa del Sitio</h3>
+                <nav aria-label="Mapa del sitio en el pie de página">
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#preguntas">Banco de Preguntas</a></li>
+                        <li><a href="#guiones">Generador de Guiones</a></li>
+                        <li><a href="#offline">Recursos Offline</a></li>
+                        <li><a href="#ods4">Sobre el ODS 4</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="footer-credits">
+                <p>&copy; 2026 Plataforma EduRadio ODS 4.</p>
+                <p>Desarrollado para comunidades educativas con conectividad limitada.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lógica JavaScript Principal -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>
