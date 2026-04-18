@@ -48,8 +48,8 @@ body.high-contrast {
     --bg-color: #000000;
     --bg-card: #121212;
     --text-color: #ffffff;
-    --primary-color: #FFD700; /* amarillo suave (gold) */
-    --primary-dark: #e6c200;
+    --primary-color: #FFFF00D6; /* amarillo suave (gold) */
+    --primary-dark: #CCCC00;
     --primary-light: #333300;
     --secondary-color: #00e5ff; /* cian accesible */
     --accent-color: #ff6b6b; /* rojo suave */
