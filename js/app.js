@@ -354,6 +354,52 @@ function initQuestionsAPI() {
     }
 }
 
+/**
+ * 7. API para envío de correo
+ */
+emailjs.init({
+  publicKey: "a8GqGV31otrh2jChh",
+});
+
+function enviarCorreo(e) {
+    
+    e.preventDefault();
+
+    const nombre = document.getElementById("contact-name").value.trim();
+    const email = document.getElementById("contact-email").value.trim();
+    const mensaje = document.getElementById("contact-message").value.trim();
+    
+
+    // Validaciones en el formulario
+    if (nombre.length < 3) {
+        alert("Nombre inválido");
+        return;
+    }
+
+    if (!email.includes("@")) {
+        alert("Correo inválido");
+        return;
+    }
+
+    if (mensaje.length < 10) {
+        alert("Mensaje muy corto");
+        return;
+    }
+    
+    emailjs.send("default_service", "template_ylarm9x", {
+        nombre: document.getElementById("contact-name").value,
+        email: document.getElementById("contact-email").value,
+        mensaje: document.getElementById("contact-message").value
+
+    })
+    .then(() => {
+        alert("Mensaje enviado correctamente");
+    }, (error) => {
+        console.error("ERROR REAL:", error);
+        alert("Error al enviar");
+    });
+}
+
 function renderAPIQuestions(questionsArray, container) {
     container.innerHTML = ''; // Limpiar grilla
 
