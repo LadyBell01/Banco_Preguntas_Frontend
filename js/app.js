@@ -354,51 +354,6 @@ function initQuestionsAPI() {
     }
 }
 
-/**
- * 7. API para envío de correo EmailJS
- */
-//inicializa el servicio
-emailjs.init({
-  publicKey: "a8GqGV31otrh2jChh",
-});
-
-function enviarCorreo(e) {
-    
-    e.preventDefault();
-
-    const nombre = document.getElementById("contact-name").value.trim();
-    const email = document.getElementById("contact-email").value.trim();
-    const mensaje = document.getElementById("contact-message").value.trim();
-    
-    // Validaciones en el formulario
-    if (nombre.length < 3) {
-        alert("Nombre inválido"); //No recibe nombres con menos de 3 caracteres
-        return;
-    }
-    if (!email.includes("@")) {
-        alert("Correo inválido"); //correo debe incluir caracter @
-        return;
-    }
-    if (mensaje.length < 10) {
-        alert("Mensaje muy corto"); //No recibe mensajes con menos de 10 caracteres
-        return;
-    }
-    /**
-    * La API usa dos paramétros del servicio EamilJS, Service ID y Template ID
-        Service ID: service_xt040ib, Template ID: template_ylarm9x
-    */
-    emailjs.send("default_service", "template_ylarm9x", {
-        nombre: document.getElementById("contact-name").value,
-        email: document.getElementById("contact-email").value,
-        mensaje: document.getElementById("contact-message").value
-    })
-    .then(() => {
-        alert("Mensaje enviado correctamente");
-    }, (error) => {
-        console.error("ERROR REAL:", error);
-        alert("Error al enviar");
-    });
-}
 /*****************************************************************************/
 
 function renderAPIQuestions(questionsArray, container) {
