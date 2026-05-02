@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Quicksand:wght@400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
 
-/* Variables de Color y Diseño (EduRadio ODS 4) */
+/* Variables de Color y Diseño (RadioEdu-ODS 4) */
 :root {
     --bg-color: #FFFFFF;
     --bg-card: #FFFFFF;
@@ -46,18 +46,18 @@
 /* Tema de Alto Contraste (A11y) */
 body.high-contrast {
     --bg-color: #000000;
-    --bg-card: #121212;
+    --bg-card: #000000;
     --text-color: #ffffff;
-    --primary-color: #FFFF00D6; /* amarillo suave (gold) */
-    --primary-dark: #CCCC00;
+    --primary-color: #ffff00d6;
+    --primary-dark: #cccc00;
     --primary-light: #333300;
-    --secondary-color: #00e5ff; /* cian accesible */
-    --accent-color: #ff6b6b; /* rojo suave */
-    --accent-hover: #ff4c4c;
+    --secondary-color: #00ffffc0;
+    --accent-color: #ff00ff;
+    --accent-hover: #cc00cc;
     --white: #1a1a1a;
-    --error-color: #ff4d4d;
-    --success-color: #00ff9c;
-    --success-light: #003d2e;
+    --error-color: #ff5555;
+    --success-color: #55ff55;
+    --success-light: #004400;
 }
 
 /* Modificadores de Tamaño de Texto (A11y) */
@@ -70,7 +70,7 @@ body.text-large {
 }
 
 body.text-small {
-    --font-base-size: 12px;
+    --font-base-size: 14px;
 }
 
 /* Reset Básico */
@@ -88,7 +88,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    transition: background-color var(--transition), color var(--transition);
+    transition: background-color var(--transition), color var(--transition), font-size var(--transition);
 }
 
 h1,
@@ -185,10 +185,9 @@ h6 {
 .breadcrumbs {
     margin-top: 1rem;
     font-size: 0.85em;
-    color: var(--bg-color);
+    color: #ffffff;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     padding-top: 0.5rem;
-    font-weight: bold;
 }
 
 /* Main Content */
@@ -253,18 +252,8 @@ h2 {
     outline: 3px solid var(--accent-color);
 }
 
-body.high-contrast .main-nav a {
-    color: #111; /* negro suave */
-    font-weight: 600;
-}
-
 body.high-contrast .primary-btn {
     color: var(--bg-color);
-}
-
-body.high-contrast .breadcrumbs span,
-body.high-contrast .breadcrumbs {
-    color: #000;
 }
 
 /* Contenedores de Iconos Pastel */
@@ -333,8 +322,7 @@ body.high-contrast .primary-btn {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     margin-bottom: 1.5rem;
-    border-left: 5px solid var(--primary-color);
-    border: 1px solid var(--primary-light);
+    border: none;
     transition: transform var(--transition), box-shadow var(--transition);
 }
 
@@ -373,7 +361,7 @@ body.high-contrast .bg-green {
 .question-card,
 .script-card {
     background-color: var(--bg-card);
-    border: 1px solid var(--primary-light);
+    border: none;
     padding: 1.5rem;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
@@ -404,11 +392,11 @@ body.high-contrast .bg-green {
     margin-top: auto;
     background-color: #f5f5f5;
     color: #333;
-    border: 1px solid #ccc;
+    border: 1px solid #E2E8F0;
     padding: 0.6rem;
     cursor: pointer;
     font-size: 0.9em;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     font-weight: bold;
     transition: var(--transition);
 }
@@ -430,7 +418,7 @@ body.high-contrast .script-card {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
     margin-top: 1rem;
-    border: 1px solid var(--primary-light);
+    border: none;
 }
 
 body.high-contrast .standard-form {
@@ -449,7 +437,8 @@ label {
 }
 
 input,
-textarea {
+textarea,
+select {
     width: 100%;
     padding: 0.8rem 1rem;
     border: 2px solid #E2E8F0;
@@ -462,7 +451,8 @@ textarea {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
     outline: none;
     border-color: var(--primary-color);
     background-color: var(--white);
@@ -582,5 +572,165 @@ body.high-contrast .message.error {
 @media (min-width: 1024px) {
     .grid-container {
         grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* =========================================================
+   Reglas migradas desde index.html (sin estilos inline)
+   ========================================================= */
+
+/* Preguntas: filtros e historial */
+.question-filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.question-history {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.question-history h3 {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+}
+
+.question-history ul {
+    list-style: disc;
+    margin-left: 1.2rem;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.question-history li {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.clear-history-btn {
+    margin-top: 0.9rem;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+}
+
+.custom-question-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.custom-question-btn {
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.custom-question-btn.edit-btn {
+    background-color: #fff3cd;
+    color: #7a5a00;
+}
+
+.custom-question-btn.delete-btn {
+    background-color: #f8d7da;
+    color: #7f1d1d;
+}
+
+.custom-question-btn:hover {
+    filter: brightness(0.95);
+}
+
+body.high-contrast .question-history {
+    background-color: #1a1a1a;
+    border-color: var(--primary-color);
+}
+
+#questions-grid {
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+#questions-grid.is-updating {
+    opacity: 0.35;
+    transform: translateY(6px);
+}
+
+/* Shared: títulos con icono y enlaces de tarjeta */
+.title-with-icon,
+.section-title-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Home */
+.home-section {
+    text-align: center;
+}
+
+.home-title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    border: none;
+    color: var(--text-color);
+}
+
+.home-description {
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    color: var(--text-color);
+}
+
+.home-grid {
+    text-align: left;
+}
+
+/* ODS 4 */
+.ods-title {
+    border: none;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ods-intro {
+    margin-top: 1rem;
+}
+
+.ods-list {
+    margin-left: 2rem;
+    margin-top: 0.5rem;
+    line-height: 1.8;
+}
+
+/* Footer */
+.footer-map-section {
+    flex: 1;
+}
+
+.footer-map-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .question-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
