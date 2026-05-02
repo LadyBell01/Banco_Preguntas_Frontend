@@ -365,34 +365,47 @@
         },
 
         renderQuestions(questions) {
-            if (!this.questionsGrid) {
-                return;
-            }
+            if (!this.questionsGrid) return;
 
-            if (questions.length === 0) {
-                this.questionsGrid.innerHTML = "";
-                return;
-            }
+            // limpiar contenido
+            this.questionsGrid.textContent = "";
 
-            const cardsHTML = questions
-                .map((question, index) => {
-                    const options = this.shuffleArray(question.options);
-                    const optionsList = options.map((option) => `<li>${this.escapeHTML(option)}</li>`).join("");
+            if (questions.length === 0) return;
 
-                    return `
-                        <article class="question-card">
-                            <h3>Pregunta ${index + 1}</h3>
-                            <p>${this.escapeHTML(question.question)}</p>
-                            <ul>${optionsList}</ul>
-                            <button class="answer-btn" type="button" data-answer="${this.escapeAttribute(question.correct)}">
-                                Mostrar respuesta
-                            </button>
-                        </article>
-                    `;
-                })
-                .join("");
+            const fragment = document.createDocumentFragment();
 
-            this.questionsGrid.innerHTML = cardsHTML;
+            questions.forEach((question, index) => {
+                const article = document.createElement("article");
+                article.classList.add("question-card");
+
+                const title = document.createElement("h3");
+                title.textContent = `Pregunta ${index + 1}`;
+
+                const text = document.createElement("p");
+                text.textContent = question.question;
+
+                const ul = document.createElement("ul");
+
+                // mezclar opciones
+                const options = this.shuffleArray(question.options);
+
+                options.forEach(option => {
+                    const li = document.createElement("li");
+                    li.textContent = option;
+                    ul.appendChild(li);
+                });
+
+                const button = document.createElement("button");
+                button.classList.add("answer-btn");
+                button.type = "button";
+                button.dataset.answer = question.correct;
+                button.textContent = "Mostrar respuesta";
+
+                article.append(title, text, ul, button);
+                fragment.appendChild(article);
+            });
+
+            this.questionsGrid.appendChild(fragment);
         },
 
         markQuestionsAsViewed(questions) {
@@ -439,27 +452,38 @@
         },
 
         renderQuestionHistory() {
-            if (!this.historyList || !this.historyContainer) {
-                return;
-            }
+            if (!this.historyList || !this.historyContainer) return;
 
             const historyItems = this.viewedQuestions.filter(
                 (item) => !this.currentQuestionIds.includes(item.id)
             );
 
+            // limpiar contenido
+            this.historyList.textContent = "";
+
             if (historyItems.length === 0) {
                 this.historyContainer.classList.add("hidden");
-                this.historyList.innerHTML = "<li>Aún no has consultado preguntas.</li>";
+                const li = document.createElement("li");
+                li.textContent = "Aún no has consultado preguntas.";
+                this.historyList.appendChild(li);
                 return;
             }
-
             this.historyContainer.classList.remove("hidden");
-            this.historyList.innerHTML = historyItems
-                .map(
-                    (item) =>
-                        `<li>Pregunta: ${this.escapeHTML(item.question)} | Respuesta: ${this.escapeHTML(item.answer)}</li>`
-                )
-                .join("");
+            const fragment = document.createDocumentFragment();
+            historyItems.forEach((item) => {
+                const li = document.createElement("li");
+
+                // texto base
+                const text1 = document.createTextNode("Pregunta: ");
+                const questionText = document.createTextNode(item.question);
+                const separator = document.createTextNode(" | Respuesta: ");
+                const answerText = document.createTextNode(item.answer);
+
+                li.append(text1, questionText, separator, answerText);
+                fragment.appendChild(li);
+            });
+
+            this.historyList.appendChild(fragment);
         },
 
         clearQuestionHistory() {
@@ -532,42 +556,62 @@
         },
 
         renderQuestionPreview(question) {
-            if (!this.questionPreview) {
-                return;
-            }
+            if (!this.questionPreview) return;
 
             this.previewQuestion = question;
-            const optionsList = question.opciones
-                .map((option) => `<li>${this.escapeHTML(option)}</li>`)
-                .join("");
+            // limpiar
+            this.questionPreview.textContent = "";
+            const article = document.createElement("article");
+            article.classList.add("question-card");
 
-            this.questionPreview.innerHTML = `
-                <article class="question-card">
-                    <h3>Previsualización</h3>
-                    <p>${this.escapeHTML(question.pregunta)}</p>
-                    <ul>${optionsList}</ul>
-                    <button class="answer-btn" type="button" data-answer="${this.escapeAttribute(question.respuestaCorrecta)}">
-                        Mostrar respuesta
-                    </button>
-                    <p><strong>Materia:</strong> ${this.escapeHTML(question.materia)} | <strong>Dificultad:</strong> ${this.escapeHTML(question.dificultad)}</p>
-                    <button class="custom-question-btn edit-btn" type="button" data-action="edit-preview">Editar</button>
-                </article>
-            `;
-        },
+            // título
+            const title = document.createElement("h3");
+            title.textContent = "Previsualización";
 
-        handlePreviewActions(event) {
-            const actionBtn = event.target.closest("[data-action]");
-            if (!actionBtn) {
-                return;
-            }
+            // pregunta
+            const text = document.createElement("p");
+            text.textContent = question.pregunta;
 
-            const action = actionBtn.getAttribute("data-action");
-            if (action === "edit-preview") {
-                if (this.previewQuestion) {
-                    this.populateCustomQuestionForm(this.previewQuestion);
-                }
-                this.showScriptMessage("Puede modificar los campos y volver a generar o guardar.", "success");
-            }
+            // opciones
+            const ul = document.createElement("ul");
+            question.opciones.forEach(option => {
+                const li = document.createElement("li");
+                li.textContent = option;
+                ul.appendChild(li);
+            });
+
+            // botón respuesta
+            const answerBtn = document.createElement("button");
+            answerBtn.classList.add("answer-btn");
+            answerBtn.type = "button";
+            answerBtn.dataset.answer = question.respuestaCorrecta;
+            answerBtn.textContent = "Mostrar respuesta";
+
+            // info (materia + dificultad)
+            const info = document.createElement("p");
+            const strongMateria = document.createElement("strong");
+            strongMateria.textContent = "Materia: ";
+            const strongDificultad = document.createElement("strong");
+            strongDificultad.textContent = "Dificultad: ";
+
+            info.append(
+                strongMateria,
+                question.materia,
+                " | ",
+                strongDificultad,
+                question.dificultad
+            );
+
+            // botón editar
+            const editBtn = document.createElement("button");
+            editBtn.classList.add("custom-question-btn", "edit-btn");
+            editBtn.type = "button";
+            editBtn.dataset.action = "edit-preview";
+            editBtn.textContent = "Editar";
+
+            // ensamblar
+            article.append(title, text, ul, answerBtn, info, editBtn);
+            this.questionPreview.appendChild(article);
         },
 
         handleCustomQuestionSave(event) {
@@ -629,41 +673,96 @@
         },
 
         renderStoredCustomQuestions() {
-            if (!this.offlineGrid) {
-                return;
-            }
+            if (!this.offlineGrid) return;
 
             const questions = this.getStoredCustomQuestions();
+            // limpiar contenido
+            this.offlineGrid.textContent = "";
+
             if (questions.length === 0) {
-                this.offlineGrid.innerHTML = `
-                    <article class="script-card">
-                        <h3>Sin preguntas guardadas</h3>
-                        <p>Aún no hay preguntas personalizadas en su dispositivo.</p>
-                    </article>
-                `;
+                const article = document.createElement("article");
+                article.classList.add("script-card");
+
+                const title = document.createElement("h3");
+                title.textContent = "Sin preguntas guardadas";
+
+                const text = document.createElement("p");
+                text.textContent = "Aún no hay preguntas personalizadas en su dispositivo.";
+
+                article.append(title, text);
+                this.offlineGrid.appendChild(article);
                 return;
             }
 
-            this.offlineGrid.innerHTML = questions
-                .map((question) => {
-                    const optionsList = question.opciones
-                        .map((option) => `<li>${this.escapeHTML(option)}</li>`)
-                        .join("");
+            const fragment = document.createDocumentFragment();
 
-                    return `
-                        <article class="question-card">
-                            <h3>${this.escapeHTML(question.pregunta)}</h3>
-                            <ul>${optionsList}</ul>
-                            <p><strong>Materia:</strong> ${this.escapeHTML(question.materia)} | <strong>Dificultad:</strong> ${this.escapeHTML(question.dificultad)}</p>
-                            <button class="answer-btn" type="button" data-answer="${this.escapeAttribute(question.respuestaCorrecta)}">Mostrar respuesta</button>
-                            <div class="custom-question-actions">
-                                <button class="custom-question-btn edit-btn" type="button" data-action="edit-custom" data-id="${this.escapeAttribute(question.id)}">Editar</button>
-                                <button class="custom-question-btn delete-btn" type="button" data-action="delete-custom" data-id="${this.escapeAttribute(question.id)}">Borrar</button>
-                            </div>
-                        </article>
-                    `;
-                })
-                .join("");
+            questions.forEach((question) => {
+                const article = document.createElement("article");
+                article.classList.add("question-card");
+
+                // título (pregunta)
+                const title = document.createElement("h3");
+                title.textContent = question.pregunta;
+
+                // lista de opciones
+                const ul = document.createElement("ul");
+                question.opciones.forEach((option) => {
+                    const li = document.createElement("li");
+                    li.textContent = option;
+                    ul.appendChild(li);
+                });
+
+                // info adicional
+                const info = document.createElement("p");
+
+                const strongMateria = document.createElement("strong");
+                strongMateria.textContent = "Materia: ";
+
+                const strongDificultad = document.createElement("strong");
+                strongDificultad.textContent = "Dificultad: ";
+
+                info.append(
+                    strongMateria,
+                    question.materia,
+                    " | ",
+                    strongDificultad,
+                    question.dificultad
+                );
+
+                // botón respuesta
+                const answerBtn = document.createElement("button");
+                answerBtn.classList.add("answer-btn");
+                answerBtn.type = "button";
+                answerBtn.dataset.answer = question.respuestaCorrecta;
+                answerBtn.textContent = "Mostrar respuesta";
+
+                // contenedor de acciones
+                const actionsDiv = document.createElement("div");
+                actionsDiv.classList.add("custom-question-actions");
+
+                // botón editar
+                const editBtn = document.createElement("button");
+                editBtn.classList.add("custom-question-btn", "edit-btn");
+                editBtn.type = "button";
+                editBtn.dataset.action = "edit-custom";
+                editBtn.dataset.id = question.id;
+                editBtn.textContent = "Editar";
+
+                // botón borrar
+                const deleteBtn = document.createElement("button");
+                deleteBtn.classList.add("custom-question-btn", "delete-btn");
+                deleteBtn.type = "button";
+                deleteBtn.dataset.action = "delete-custom";
+                deleteBtn.dataset.id = question.id;
+                deleteBtn.textContent = "Borrar";
+
+                actionsDiv.append(editBtn, deleteBtn);
+
+                article.append(title, ul, info, answerBtn, actionsDiv);
+                fragment.appendChild(article);
+            });
+
+            this.offlineGrid.appendChild(fragment);
         },
 
         handleOfflineGridActions(event) {
@@ -760,7 +859,7 @@
                 this.hideContactSuccess();
             });
         },
-
+        /*
         handleContactSubmit(event) {
             event.preventDefault();
 
@@ -781,6 +880,46 @@
             }
 
             this.hideContactSuccess();
+        },
+        */
+
+        handleContactSubmit(event) {
+            event.preventDefault();
+
+            const isNameValid = this.validateContactName();
+            const isEmailValid = this.validateContactEmail();
+            const isPhoneValid = this.validateContactPhone();
+            const isMessageValid = this.validateContactMessage();
+
+            if (!(isNameValid && isEmailValid && isPhoneValid && isMessageValid)) {
+                this.hideContactSuccess();
+                return;
+            }
+
+            emailjs.send("default_service", "template_ylarm9x", {
+                nombre: this.contactNameInput.value,
+                email: this.contactEmailInput.value,
+                mensaje: this.contactMessageInput.value
+            })
+            .then(() => {
+                if (this.contactSuccessBox) {
+                    this.contactSuccessBox.textContent = "Mensaje enviado correctamente.";
+                    this.contactSuccessBox.classList.remove("hidden", "error");
+                    this.contactSuccessBox.classList.add("success");
+                }
+
+                this.contactForm?.reset();
+                this.clearContactFieldStates();
+            })
+            .catch((error) => {
+                console.error("Error EmailJS:", error);
+
+                if (this.contactSuccessBox) {
+                    this.contactSuccessBox.textContent = "Error al enviar el mensaje.";
+                    this.contactSuccessBox.classList.remove("hidden", "success");
+                    this.contactSuccessBox.classList.add("error");
+                }
+            });
         },
 
         validateContactName() {
@@ -868,7 +1007,9 @@
             return this.escapeHTML(value);
         }
     };
-
+    emailjs.init({
+        publicKey: "a8GqGV31otrh2jChh"
+    })
     document.addEventListener("DOMContentLoaded", () => RadioEduApp.init());
+
 })();
-// cambio prueba
