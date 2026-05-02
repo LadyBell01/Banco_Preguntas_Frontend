@@ -403,7 +403,7 @@
 
                 article.append(title, text, ul, button);
                 fragment.appendChild(article);
-            });
+                });
 
             this.questionsGrid.appendChild(fragment);
         },
@@ -612,6 +612,21 @@
             // ensamblar
             article.append(title, text, ul, answerBtn, info, editBtn);
             this.questionPreview.appendChild(article);
+        },
+
+        handlePreviewActions(event) {
+            const actionBtn = event.target.closest("[data-action]");
+            if (!actionBtn) {
+                return;
+            }
+
+            const action = actionBtn.getAttribute("data-action");
+            if (action === "edit-preview") {
+                if (this.previewQuestion) {
+                    this.populateCustomQuestionForm(this.previewQuestion);
+                }
+                this.showScriptMessage("Puede modificar los campos y volver a generar o guardar.", "success");
+            }
         },
 
         handleCustomQuestionSave(event) {
@@ -859,29 +874,6 @@
                 this.hideContactSuccess();
             });
         },
-        /*
-        handleContactSubmit(event) {
-            event.preventDefault();
-
-            const isNameValid = this.validateContactName();
-            const isEmailValid = this.validateContactEmail();
-            const isPhoneValid = this.validateContactPhone();
-            const isMessageValid = this.validateContactMessage();
-
-            if (isNameValid && isEmailValid && isPhoneValid && isMessageValid) {
-                if (this.contactSuccessBox) {
-                    this.contactSuccessBox.textContent = "Mensaje enviado correctamente.";
-                    this.contactSuccessBox.classList.remove("hidden", "error");
-                    this.contactSuccessBox.classList.add("success");
-                }
-                this.contactForm?.reset();
-                this.clearContactFieldStates();
-                return;
-            }
-
-            this.hideContactSuccess();
-        },
-        */
 
         handleContactSubmit(event) {
             event.preventDefault();
@@ -1011,5 +1003,4 @@
         publicKey: "a8GqGV31otrh2jChh"
     })
     document.addEventListener("DOMContentLoaded", () => RadioEduApp.init());
-
 })();
