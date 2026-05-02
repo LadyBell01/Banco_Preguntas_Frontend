@@ -1,391 +1,1006 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar los módulos de la aplicación SPA
-    initRouting();
-    initAccessibility();
-    initContactFormValidation();
-    initScriptGenerator();
-    initQuestionsAPI();
-});
+(() => {
+    const QUESTION_BANK = [
+        { id: "ciencia-facil-1", subject: "ciencia", difficulty: "facil", question: "¿Qué planeta es conocido como el planeta rojo?", correct: "Marte", options: ["Marte", "Venus", "Saturno"] },
+        { id: "ciencia-facil-2", subject: "ciencia", difficulty: "facil", question: "¿Cuál es el estado del agua a 0°C?", correct: "Sólido", options: ["Sólido", "Líquido", "Gaseoso"] },
+        { id: "ciencia-facil-3", subject: "ciencia", difficulty: "facil", question: "¿Qué gas es más abundante en la atmósfera?", correct: "Nitrógeno", options: ["Oxígeno", "Nitrógeno", "Helio"] },
+        { id: "ciencia-medio-1", subject: "ciencia", difficulty: "medio", question: "¿Cuál es la unidad básica de los seres vivos?", correct: "Célula", options: ["Átomo", "Célula", "Tejido"] },
+        { id: "ciencia-medio-2", subject: "ciencia", difficulty: "medio", question: "¿Qué órgano bombea la sangre en el cuerpo humano?", correct: "Corazón", options: ["Pulmón", "Hígado", "Corazón"] },
+        { id: "ciencia-medio-3", subject: "ciencia", difficulty: "medio", question: "¿Qué proceso usan las plantas para fabricar su alimento?", correct: "Fotosíntesis", options: ["Digestión", "Fotosíntesis", "Evaporación"] },
+        { id: "ciencia-dificil-1", subject: "ciencia", difficulty: "dificil", question: "¿Qué tipo de enlace comparte electrones entre átomos?", correct: "Covalente", options: ["Iónico", "Covalente", "Metálico"] },
+        { id: "ciencia-dificil-2", subject: "ciencia", difficulty: "dificil", question: "¿Dónde ocurre principalmente la respiración celular?", correct: "Mitocondria", options: ["Núcleo", "Mitocondria", "Ribosoma"] },
+        { id: "ciencia-dificil-3", subject: "ciencia", difficulty: "dificil", question: "¿Qué partícula tiene carga negativa?", correct: "Electrón", options: ["Protón", "Neutrón", "Electrón"] },
+        { id: "historia-facil-1", subject: "historia", difficulty: "facil", question: "¿Qué muro cayó en 1989 en Alemania?", correct: "Muro de Berlín", options: ["Muro de Berlín", "Muro de París", "Muro de Roma"] },
+        { id: "historia-facil-2", subject: "historia", difficulty: "facil", question: "¿Quién llegó a América en 1492 según la historia tradicional?", correct: "Cristóbal Colón", options: ["Cristóbal Colón", "Simón Bolívar", "Hernán Cortés"] },
+        { id: "historia-facil-3", subject: "historia", difficulty: "facil", question: "¿En qué continente se desarrolló el antiguo Egipto?", correct: "África", options: ["Europa", "África", "Asia"] },
+        { id: "historia-medio-1", subject: "historia", difficulty: "medio", question: "¿Qué revolución inició en Francia en 1789?", correct: "Revolución Francesa", options: ["Revolución Industrial", "Revolución Francesa", "Revolución Rusa"] },
+        { id: "historia-medio-2", subject: "historia", difficulty: "medio", question: "¿Qué civilización construyó Machu Picchu?", correct: "Inca", options: ["Maya", "Azteca", "Inca"] },
+        { id: "historia-medio-3", subject: "historia", difficulty: "medio", question: "¿Quién lideró campañas de independencia en Sudamérica?", correct: "Simón Bolívar", options: ["José Martí", "Simón Bolívar", "Miguel Hidalgo"] },
+        { id: "historia-dificil-1", subject: "historia", difficulty: "dificil", question: "¿En qué año comenzó la Primera Guerra Mundial?", correct: "1914", options: ["1914", "1918", "1939"] },
+        { id: "historia-dificil-2", subject: "historia", difficulty: "dificil", question: "¿Qué tratado cerró formalmente la Primera Guerra Mundial?", correct: "Tratado de Versalles", options: ["Tratado de Versalles", "Tratado de París", "Tratado de Utrecht"] },
+        { id: "historia-dificil-3", subject: "historia", difficulty: "dificil", question: "¿Qué dinastía unificó China en 221 a.C.?", correct: "Dinastía Qin", options: ["Dinastía Han", "Dinastía Qin", "Dinastía Tang"] },
+        { id: "geografia-facil-1", subject: "geografia", difficulty: "facil", question: "¿Cuál es la capital de Colombia?", correct: "Bogotá", options: ["Bogotá", "Quito", "Lima"] },
+        { id: "geografia-facil-2", subject: "geografia", difficulty: "facil", question: "¿Cuál es el océano más grande del planeta?", correct: "Océano Pacífico", options: ["Océano Pacífico", "Océano Atlántico", "Océano Índico"] },
+        { id: "geografia-facil-3", subject: "geografia", difficulty: "facil", question: "¿En qué continente está Brasil?", correct: "América del Sur", options: ["América del Norte", "Europa", "América del Sur"] },
+        { id: "geografia-medio-1", subject: "geografia", difficulty: "medio", question: "¿Qué cordillera atraviesa Sudamérica?", correct: "Cordillera de los Andes", options: ["Alpes", "Cordillera de los Andes", "Himalaya"] },
+        { id: "geografia-medio-2", subject: "geografia", difficulty: "medio", question: "¿Cuál es el río más caudaloso del mundo?", correct: "Río Amazonas", options: ["Río Amazonas", "Río Nilo", "Río Misisipi"] },
+        { id: "geografia-medio-3", subject: "geografia", difficulty: "medio", question: "¿Cuál es el desierto cálido más grande?", correct: "Sahara", options: ["Sahara", "Atacama", "Gobi"] },
+        { id: "geografia-dificil-1", subject: "geografia", difficulty: "dificil", question: "¿Qué línea divide la Tierra en hemisferio norte y sur?", correct: "Ecuador", options: ["Ecuador", "Trópico de Cáncer", "Meridiano de Greenwich"] },
+        { id: "geografia-dificil-2", subject: "geografia", difficulty: "dificil", question: "¿Qué país es el más extenso del mundo?", correct: "Rusia", options: ["Canadá", "Rusia", "China"] },
+        { id: "geografia-dificil-3", subject: "geografia", difficulty: "dificil", question: "¿Qué estrecho separa Asia de América del Norte?", correct: "Estrecho de Bering", options: ["Estrecho de Bering", "Estrecho de Gibraltar", "Estrecho de Magallanes"] }
+    ];
 
-/**
- * 1. Lógica de Navegación SPA (Routing Vanilla)
- */
-function initRouting() {
-    const navLinks = document.querySelectorAll('.main-nav a, .footer-map a');
-    const sections = document.querySelectorAll('.page-section');
-    const breadcrumbCurrent = document.getElementById('breadcrumb-current');
+    const RadioEduApp = {
+        customQuestionsStorageKey: "mis_preguntas_custom",
+        accessibilityStorageKey: "radioedu_ods_accessibility",
+        questionHistoryStorageKey: "radioedu_ods_question_history",
+        viewedQuestions: [],
+        currentQuestionIds: [],
+        previewQuestion: null,
 
-    // Función principal para navegar
-    function navigateTo(hash) {
-        let targetId = hash.replace('#', '') || 'inicio';
+        init() {
+            this.cacheDOM();
+            this.applyStoredAccessibilityPreferences();
+            this.bindEvents();
+            this.initializeQuestionSystem();
+            this.renderStoredCustomQuestions();
+            this.hideContactSuccess();
+        },
 
-        // 1. Ocultar todas las secciones
-        sections.forEach(sec => sec.classList.add('hidden'));
+        cacheDOM() {
+            this.body = document.body;
+            this.sections = Array.from(document.querySelectorAll(".page-section"));
+            this.navLinks = Array.from(document.querySelectorAll("#nav-menu a"));
+            this.cardLinks = Array.from(document.querySelectorAll(".card-link"));
+            this.breadcrumbCurrent = document.querySelector("#breadcrumb-current");
 
-        // 2. Mostrar la sección destino
-        const targetSection = document.getElementById(targetId);
-        if (targetSection) {
-            targetSection.classList.remove('hidden');
-        } else {
-            // Fallback a inicio si no existe
-            document.getElementById('inicio').classList.remove('hidden');
-            targetId = 'inicio';
-        }
+            this.btnTextDecrease = document.querySelector("#btn-text-decrease");
+            this.btnTextIncrease = document.querySelector("#btn-text-increase");
+            this.btnTextReset = document.querySelector("#btn-text-reset");
+            this.btnContrast = document.querySelector("#btn-contrast");
 
-        // 3. Actualizar estado "activo" en la navegación principal
-        document.querySelectorAll('.main-nav a').forEach(a => {
-            a.classList.remove('active');
-            if (a.getAttribute('href') === `#${targetId}`) {
-                a.classList.add('active');
-                // Actualizar Migas de Pan (Breadcrumbs)
-                if (breadcrumbCurrent) breadcrumbCurrent.textContent = a.textContent;
-            }
-        });
+            this.refreshQuestionsBtn = document.querySelector("#refresh-questions-btn");
+            this.apiStatus = document.querySelector("#api-status");
+            this.questionsGrid = document.querySelector("#questions-grid");
+            this.subjectFilter = document.querySelector("#subject-filter");
+            this.difficultyFilter = document.querySelector("#difficulty-filter");
+            this.historyList = document.querySelector("#history-list");
+            this.historyContainer = document.querySelector("#historial-lista");
+            this.clearHistoryBtn = document.querySelector("#clear-history-btn");
 
-        // 4. Lógica dinámica al visitar secciones
-        if (targetId === 'offline') {
-            renderOfflineScripts();
-        }
-    }
+            this.scriptForm = document.querySelector("#script-form");
+            this.customSubjectInput = document.querySelector("#custom-subject");
+            this.customDifficultyInput = document.querySelector("#custom-difficulty");
+            this.customQuestionInput = document.querySelector("#custom-question");
+            this.optionAInput = document.querySelector("#option-a");
+            this.optionBInput = document.querySelector("#option-b");
+            this.optionCInput = document.querySelector("#option-c");
+            this.correctOptionInput = document.querySelector("#correct-option");
+            this.generateQuestionBtn = document.querySelector("#generate-question-btn");
+            this.questionPreview = document.querySelector("#question-preview");
+            this.scriptMessage = document.querySelector("#script-message");
+            this.offlineGrid = document.querySelector("#offline-grid");
+            this.editingQuestionId = null;
 
-    // Interceptar clicks en enlaces de navegación
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            const href = link.getAttribute('href');
-            if (href && href.startsWith('#')) {
-                e.preventDefault();
-                // Actualizar la URL sin recargar la página
-                history.pushState(null, null, href);
-                navigateTo(href);
-            }
-        });
-    });
+            this.contactForm = document.querySelector("#contact-form");
+            this.contactNameInput = document.querySelector("#contact-name");
+            this.contactEmailInput = document.querySelector("#contact-email");
+            this.contactPhoneInput = document.querySelector("#contact-phone");
+            this.contactMessageInput = document.querySelector("#contact-message");
+            this.contactSuccessBox = document.querySelector("#form-successbox");
 
-    // Manejar evento de retroceso en el navegador (Back button)
-    window.addEventListener('popstate', () => {
-        navigateTo(location.hash);
-    });
+            this.errorName = document.querySelector("#error-name");
+            this.errorEmail = document.querySelector("#error-email");
+            this.errorPhone = document.querySelector("#error-phone");
+            this.errorMsg = document.querySelector("#error-msg");
+        },
 
-    // Cargar la sección correcta basada en la URL al cargar la página
-    navigateTo(location.hash);
-}
+        bindEvents() {
+            this.navLinks.forEach((link) => {
+                link.addEventListener("click", (event) => this.handleNavigationClick(event, link));
+            });
 
-/**
- * 2. Accesibilidad (A11y)
- */
-function initAccessibility() {
-    const btnDecrease = document.getElementById('btn-text-decrease');
-    const btnIncrease = document.getElementById('btn-text-increase');
-    const btnContrast = document.getElementById('btn-contrast');
+            this.cardLinks.forEach((link) => {
+                link.addEventListener("click", (event) => this.handleNavigationClick(event, link));
+            });
 
-    let currentSize = 'base'; // Estados posibles: base, small, large
-
-    // Disminuir texto
-    btnDecrease.addEventListener('click', () => {
-        if (currentSize === 'base') {
-            document.body.classList.add('text-small');
-            currentSize = 'small';
-        } else if (currentSize === 'large') {
-            document.body.classList.remove('text-large');
-            currentSize = 'base';
-        }
-    });
-
-    // Aumentar texto
-    btnIncrease.addEventListener('click', () => {
-        if (currentSize === 'base') {
-            document.body.classList.add('text-large');
-            currentSize = 'large';
-        } else if (currentSize === 'small') {
-            document.body.classList.remove('text-small');
-            currentSize = 'base';
-        }
-    });
-
-    // Alternar Alto Contraste
-    btnContrast.addEventListener('click', () => {
-        document.body.classList.toggle('high-contrast');
-    });
-}
-
-/**
- * 3. Validación de Formulario (Expresiones Regulares - Regex)
- */
-function initContactFormValidation() {
-    const form = document.getElementById('contact-form');
-    if (!form) return;
-
-    // Patrones de Expresiones Regulares
-    const regexPatterns = {
-        name: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\.,]{3,60}$/,
-        email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/,
-        phone: /^(\+\d{1,4}\s?)?(\d\s?){7,14}$/ // Prefijo internacional opcional, seguido de números y espacios
-    };
-
-    form.addEventListener('submit', (e) => {
-        e.preventDefault(); // Evitar envío por defecto
-        let isFormValid = true;
-
-        // Cargar inputs
-        const inputName = document.getElementById('contact-name');
-        const inputEmail = document.getElementById('contact-email');
-        const inputPhone = document.getElementById('contact-phone');
-        const inputMsg = document.getElementById('contact-message');
-
-        // Función de ayuda
-        const validateField = (input, pattern, errorId) => {
-            const val = input.value.trim();
-            // Para teléfono, si está vacío se ignora (ya que es opcional)
-            if (input.id === 'contact-phone' && val === '') {
-                input.classList.remove('invalid');
-                document.getElementById(errorId).style.display = 'none';
-                return true;
+            if (this.btnTextIncrease) {
+                this.btnTextIncrease.addEventListener("click", () => this.increaseText());
             }
 
-            if (!pattern.test(val)) {
-                input.classList.add('invalid');
-                document.getElementById(errorId).style.display = 'block';
-                return false;
-            } else {
-                input.classList.remove('invalid');
-                document.getElementById(errorId).style.display = 'none';
-                return true;
+            if (this.btnTextDecrease) {
+                this.btnTextDecrease.addEventListener("click", () => this.decreaseText());
             }
-        };
 
-        // Ejecutar validaciones Regex
-        const vName = validateField(inputName, regexPatterns.name, 'error-name');
-        const vEmail = validateField(inputEmail, regexPatterns.email, 'error-email');
-        const vPhone = validateField(inputPhone, regexPatterns.phone, 'error-phone');
+            if (this.btnTextReset) {
+                this.btnTextReset.addEventListener("click", () => this.resetText());
+            }
 
-        // Validar mensaje base (al menos 10 caracteres)
-        let vMsg = false;
-        if (inputMsg.value.trim().length < 10) {
-            inputMsg.classList.add('invalid');
-            document.getElementById('error-msg').style.display = 'block';
-        } else {
-            inputMsg.classList.remove('invalid');
-            document.getElementById('error-msg').style.display = 'none';
-            vMsg = true;
-        }
+            if (this.btnContrast) {
+                this.btnContrast.addEventListener("click", () => this.toggleContrast());
+            }
 
-        isFormValid = vName && vEmail && vPhone && vMsg;
+            if (this.refreshQuestionsBtn) {
+                this.refreshQuestionsBtn.addEventListener("click", () => this.loadFilteredQuestions());
+            }
 
-        // Feedback al usuario
-        const msgBox = document.getElementById('form-successbox');
-        if (isFormValid) {
-            msgBox.textContent = "✅ ¡Mensaje enviado con éxito! (Simulación SPA)";
-            msgBox.className = "message success";
-            msgBox.classList.remove('hidden');
-            form.reset();
-            setTimeout(() => msgBox.classList.add('hidden'), 5000);
-        } else {
-            msgBox.textContent = "❌ Por favor, revise y corrija los campos marcados en rojo.";
-            msgBox.className = "message error";
-            msgBox.classList.remove('hidden');
-        }
-    });
-}
+            if (this.subjectFilter) {
+                this.subjectFilter.addEventListener("change", () => this.loadFilteredQuestions());
+            }
 
-/**
- * 4. Generador de Guiones y Guardado en LocalStorage (Offline)
- */
-function initScriptGenerator() {
-    const form = document.getElementById('script-form');
-    if (!form) return;
+            if (this.difficultyFilter) {
+                this.difficultyFilter.addEventListener("change", () => this.loadFilteredQuestions());
+            }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+            if (this.questionsGrid) {
+                this.questionsGrid.addEventListener("click", (event) => this.handleAnswerToggle(event));
+            }
 
-        const title = document.getElementById('script-title').value.trim();
-        const content = document.getElementById('script-content').value.trim();
-        const currentDate = new Date().toLocaleString('es-ES');
+            if (this.clearHistoryBtn) {
+                this.clearHistoryBtn.addEventListener("click", () => this.clearQuestionHistory());
+            }
 
-        if (title && content) {
-            // Construir el objeto del guion
-            const newScript = {
-                id: Date.now(),
-                title: title,
-                content: content,
-                date: currentDate
+            if (this.generateQuestionBtn) {
+                this.generateQuestionBtn.addEventListener("click", () => this.handleGenerateQuestion());
+            }
+
+            if (this.scriptForm) {
+                this.scriptForm.addEventListener("submit", (event) => this.handleCustomQuestionSave(event));
+            }
+
+            if (this.questionPreview) {
+                this.questionPreview.addEventListener("click", (event) => this.handlePreviewActions(event));
+            }
+
+            if (this.offlineGrid) {
+                this.offlineGrid.addEventListener("click", (event) => {
+                    this.handleAnswerToggle(event);
+                    this.handleOfflineGridActions(event);
+                });
+            }
+
+            if (this.contactForm) {
+                this.bindContactRealtimeValidation();
+                this.contactForm.addEventListener("submit", (event) => this.handleContactSubmit(event));
+            }
+        },
+
+        handleNavigationClick(event, link) {
+            const href = link.getAttribute("href");
+            if (!href || !href.startsWith("#")) {
+                return;
+            }
+
+            const sectionId = href.slice(1);
+            const targetSection = document.getElementById(sectionId);
+
+            if (!targetSection || !targetSection.classList.contains("page-section")) {
+                return;
+            }
+
+            event.preventDefault();
+            this.showSection(sectionId);
+            this.updateActiveNavLink(sectionId);
+            this.updateBreadcrumb(link, sectionId);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+
+        showSection(sectionId) {
+            this.sections.forEach((section) => {
+                const isTarget = section.id === sectionId;
+                section.classList.toggle("hidden", !isTarget);
+                section.classList.toggle("active", isTarget);
+            });
+        },
+
+        updateActiveNavLink(sectionId) {
+            this.navLinks.forEach((link) => {
+                const isActive = link.getAttribute("href") === `#${sectionId}`;
+                link.classList.toggle("active", isActive);
+            });
+        },
+
+        updateBreadcrumb(link, sectionId) {
+            if (!this.breadcrumbCurrent) {
+                return;
+            }
+
+            const navLink = this.navLinks.find((item) => item.getAttribute("href") === `#${sectionId}`);
+            if (navLink) {
+                this.breadcrumbCurrent.textContent = navLink.textContent?.trim() || "Inicio";
+                return;
+            }
+
+            const cardTitle = link.querySelector("h3");
+            this.breadcrumbCurrent.textContent = cardTitle?.textContent?.trim() || "Inicio";
+        },
+
+        increaseText() {
+            this.body.classList.remove("text-small");
+            this.body.classList.add("text-large");
+            this.saveAccessibilityPreferences();
+        },
+
+        decreaseText() {
+            this.body.classList.remove("text-large");
+            this.body.classList.add("text-small");
+            this.saveAccessibilityPreferences();
+        },
+
+        resetText() {
+            this.body.classList.remove("text-large", "text-small");
+            this.body.style.removeProperty("font-size");
+            document.documentElement.style.removeProperty("font-size");
+            this.saveAccessibilityPreferences();
+        },
+
+        toggleContrast() {
+            this.body.classList.toggle("high-contrast");
+            this.saveAccessibilityPreferences();
+        },
+
+        applyStoredAccessibilityPreferences() {
+            if (!this.body) {
+                return;
+            }
+
+            const rawData = localStorage.getItem(this.accessibilityStorageKey);
+            if (!rawData) {
+                return;
+            }
+
+            try {
+                const preferences = JSON.parse(rawData);
+                const textSize = preferences?.textSize;
+                const highContrast = preferences?.highContrast;
+
+                this.body.classList.remove("text-large", "text-small");
+                this.body.style.removeProperty("font-size");
+                document.documentElement.style.removeProperty("font-size");
+                if (textSize === "large") {
+                    this.body.classList.add("text-large");
+                } else if (textSize === "small") {
+                    this.body.classList.add("text-small");
+                }
+
+                this.body.classList.toggle("high-contrast", Boolean(highContrast));
+            } catch (_error) {
+                localStorage.removeItem(this.accessibilityStorageKey);
+            }
+        },
+
+        saveAccessibilityPreferences() {
+            if (!this.body) {
+                return;
+            }
+
+            let textSize = "normal";
+            if (this.body.classList.contains("text-large")) {
+                textSize = "large";
+            } else if (this.body.classList.contains("text-small")) {
+                textSize = "small";
+            }
+
+            const preferences = {
+                textSize,
+                highContrast: this.body.classList.contains("high-contrast")
             };
 
-            // Leer de LocalStorage (o inicializar array vacío)
-            const savedScripts = JSON.parse(localStorage.getItem('edu_radio_scripts')) || [];
+            localStorage.setItem(this.accessibilityStorageKey, JSON.stringify(preferences));
+        },
 
-            // Agregar el nuevo y guardar
-            savedScripts.push(newScript);
-            localStorage.setItem('edu_radio_scripts', JSON.stringify(savedScripts));
+        initializeQuestionSystem() {
+            this.viewedQuestions = this.getViewedQuestions();
+            this.renderQuestionHistory();
+            this.loadFilteredQuestions();
+        },
 
-            // Feedback
-            const msgBox = document.getElementById('script-message');
-            msgBox.textContent = `✅ Guion "${title}" guardado offline correctamente para trabajar sin internet.`;
-            msgBox.className = 'message success';
-            msgBox.classList.remove('hidden');
-            form.reset();
-
-            // Si el usuario está viendo la sección offline simultáneamente (no pasa, pero por seguridad manual)
-            // renderOfflineScripts();
-
-            setTimeout(() => msgBox.classList.add('hidden'), 4000);
-        }
-    });
-}
-
-/**
- * 5. Renderizado de Recursos Offline Guardados
- */
-function renderOfflineScripts() {
-    const container = document.getElementById('offline-grid');
-    if (!container) return;
-
-    // Obtener los datos locales
-    const savedScripts = JSON.parse(localStorage.getItem('edu_radio_scripts')) || [];
-
-    if (savedScripts.length === 0) {
-        container.innerHTML = `
-            <div class="card bg-green" style="grid-column: 1 / -1;">
-                <p>No tienes guiones guardados en este dispositivo. Ve al <strong>Generador de Guiones</strong> para empezar a crear recursos para clases o programas que funcionen sin conexión.</p>
-            </div>`;
-        return;
-    }
-
-    container.innerHTML = '';
-
-    // Invertir el array para mostrar los más recientes de primero
-    savedScripts.slice().reverse().forEach(script => {
-        const card = document.createElement('div');
-        card.className = 'script-card';
-
-        // Extracto pequeño del guion
-        const extract = script.content.length > 100
-            ? script.content.substring(0, 100) + '...'
-            : script.content;
-
-        card.innerHTML = `
-            <h3>${escapeHTML(script.title)}</h3>
-            <small style="color: #666; display: block; margin-bottom: 0.8rem;">📅 Guardado: ${script.date}</small>
-            <p>${escapeHTML(extract)}</p>
-            
-            <div style="margin-top: auto; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <button class="answer-btn" style="flex: 1;" onclick="viewFullScript(${script.id})">Leer Completo</button>
-                <button class="answer-btn" style="flex: 1; background-color: var(--error-color); color: white; border: none;" onclick="deleteScript(${script.id})">Borrar</button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-// Global functions for inline DOM handlers
-window.deleteScript = function (id) {
-    if (confirm('¿Está seguro de eliminar permanentemente este guion de este dispositivo?')) {
-        let scripts = JSON.parse(localStorage.getItem('edu_radio_scripts')) || [];
-        scripts = scripts.filter(sc => sc.id !== id);
-        localStorage.setItem('edu_radio_scripts', JSON.stringify(scripts));
-        renderOfflineScripts();
-    }
-};
-
-window.viewFullScript = function (id) {
-    const scripts = JSON.parse(localStorage.getItem('edu_radio_scripts')) || [];
-    const script = scripts.find(sc => sc.id === id);
-    if (script) {
-        alert(`🎙️ TÍTULO: ${script.title}\n📅 FECHA: ${script.date}\n\n📝 CONTENIDO:\n${script.content}`);
-    }
-};
-
-/**
- * 6. Consumo de API Externa (Open Trivia DB)
- */
-function initQuestionsAPI() {
-    const btnLoad = document.getElementById('load-questions-btn');
-    const container = document.getElementById('questions-grid');
-    const statusMsg = document.getElementById('api-status');
-
-    btnLoad.addEventListener('click', async () => {
-        btnLoad.textContent = '🔄 Buscando Preguntas...';
-        btnLoad.disabled = true;
-        statusMsg.textContent = "Conectando al banco global...";
-        statusMsg.style.color = "var(--primary-color)";
-
-        try {
-            // API: Traer 6 preguntas de Cultura General (Categoría 9), dificultad media, codificadas en base64 para evitar issues de caracteres especiales
-            const response = await fetch('https://opentdb.com/api.php?amount=6&category=9&difficulty=medium&type=multiple&encode=base64');
-
-            if (!response.ok) throw new Error('Falló la conexión HTTP');
-
-            const data = await response.json();
-
-            if (data.results && data.results.length > 0) {
-                renderAPIQuestions(data.results, container);
-                // Guardar backup local por si luego trabajan sin conexión
-                localStorage.setItem('edu_radio_questions_backup', JSON.stringify(data.results));
-
-                statusMsg.textContent = "✅ Preguntas cargadas con éxito. Se ha guardado una copia offline.";
-                statusMsg.style.color = "var(--success-color)";
-            } else {
-                throw new Error('La API no retornó resultados');
+        loadFilteredQuestions() {
+            if (!this.questionsGrid || !this.apiStatus || !this.subjectFilter || !this.difficultyFilter) {
+                return;
             }
-        } catch (error) {
-            console.error("Error al obtener la API:", error);
 
-            // Estrategia Offline (Fallback a caché local)
-            const backupStr = localStorage.getItem('edu_radio_questions_backup');
-            if (backupStr) {
-                renderAPIQuestions(JSON.parse(backupStr), container);
-                statusMsg.textContent = "⚠️ Sin conexión a la API. Mostrando preguntas respaldadas offline anteriormente.";
-                statusMsg.style.color = "var(--accent-color)";
-            } else {
-                statusMsg.textContent = "❌ No hay conexión a Internet y no existen copias locales guardadas. Imposible cargar preguntas.";
-                statusMsg.style.color = "var(--error-color)";
+            const subject = this.subjectFilter.value;
+            const difficulty = this.difficultyFilter.value;
+            const evaluationBank = this.getEvaluationQuestionBank();
+
+            const filteredQuestions = evaluationBank.filter(
+                (question) => question.subject === subject && question.difficulty === difficulty
+            );
+
+            const unseenQuestions = filteredQuestions.filter(
+                (question) => !this.viewedQuestions.some((viewed) => viewed.id === question.id)
+            );
+
+            if (unseenQuestions.length === 0) {
+                this.currentQuestionIds = [];
+                this.updateQuestionsWithTransition([]);
+                this.apiStatus.textContent = "Has completado todas las preguntas de esta sección";
+                this.renderQuestionHistory();
+                return;
             }
-        } finally {
-            btnLoad.textContent = '🔄 Cargar Nuevas Preguntas (Requiere Internet)';
-            btnLoad.disabled = false;
+
+            const selectedQuestions = this.shuffleArray(unseenQuestions).slice(0, 3);
+            this.currentQuestionIds = selectedQuestions.map((question) => question.id);
+            this.markQuestionsAsViewed(selectedQuestions);
+            this.updateQuestionsWithTransition(selectedQuestions);
+
+            const statusCount = selectedQuestions.length;
+            this.apiStatus.textContent = `Mostrando ${statusCount} pregunta(s) de ${subject} - ${difficulty}.`;
+        },
+
+        getEvaluationQuestionBank() {
+            const customQuestions = this.getStoredCustomQuestions()
+                .map((question) => ({
+                    id: question.id,
+                    subject: question.materia,
+                    difficulty: question.dificultad,
+                    question: question.pregunta,
+                    correct: question.respuestaCorrecta,
+                    options: question.opciones
+                }))
+                .filter(
+                    (question) =>
+                        typeof question.id === "string" &&
+                        typeof question.subject === "string" &&
+                        typeof question.difficulty === "string" &&
+                        typeof question.question === "string" &&
+                        typeof question.correct === "string" &&
+                        Array.isArray(question.options) &&
+                        question.options.length === 3
+                );
+
+            return [...QUESTION_BANK, ...customQuestions];
+        },
+
+        updateQuestionsWithTransition(questions) {
+            if (!this.questionsGrid) {
+                return;
+            }
+
+            this.questionsGrid.classList.add("is-updating");
+            window.setTimeout(() => {
+                this.renderQuestions(questions);
+                this.questionsGrid.classList.remove("is-updating");
+            }, 220);
+        },
+
+        renderQuestions(questions) {
+            if (!this.questionsGrid) return;
+
+            // limpiar contenido
+            this.questionsGrid.textContent = "";
+
+            if (questions.length === 0) return;
+
+            const fragment = document.createDocumentFragment();
+
+            questions.forEach((question, index) => {
+                const article = document.createElement("article");
+                article.classList.add("question-card");
+
+                const title = document.createElement("h3");
+                title.textContent = `Pregunta ${index + 1}`;
+
+                const text = document.createElement("p");
+                text.textContent = question.question;
+
+                const ul = document.createElement("ul");
+
+                // mezclar opciones
+                const options = this.shuffleArray(question.options);
+
+                options.forEach(option => {
+                    const li = document.createElement("li");
+                    li.textContent = option;
+                    ul.appendChild(li);
+                });
+
+                const button = document.createElement("button");
+                button.classList.add("answer-btn");
+                button.type = "button";
+                button.dataset.answer = question.correct;
+                button.textContent = "Mostrar respuesta";
+
+                article.append(title, text, ul, button);
+                fragment.appendChild(article);
+                });
+
+            this.questionsGrid.appendChild(fragment);
+        },
+
+        markQuestionsAsViewed(questions) {
+            questions.forEach((question) => {
+                const exists = this.viewedQuestions.some((viewed) => viewed.id === question.id);
+                if (!exists) {
+                    this.viewedQuestions.push({
+                        id: question.id,
+                        question: question.question,
+                        answer: question.correct
+                    });
+                }
+            });
+
+            this.saveViewedQuestions();
+            this.renderQuestionHistory();
+        },
+
+        getViewedQuestions() {
+            const raw = sessionStorage.getItem(this.questionHistoryStorageKey);
+            if (!raw) {
+                return [];
+            }
+
+            try {
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) {
+                    return [];
+                }
+
+                return parsed.filter(
+                    (item) =>
+                        typeof item?.id === "string" &&
+                        typeof item?.question === "string" &&
+                        typeof item?.answer === "string"
+                );
+            } catch (_error) {
+                return [];
+            }
+        },
+
+        saveViewedQuestions() {
+            sessionStorage.setItem(this.questionHistoryStorageKey, JSON.stringify(this.viewedQuestions));
+        },
+
+        renderQuestionHistory() {
+            if (!this.historyList || !this.historyContainer) return;
+
+            const historyItems = this.viewedQuestions.filter(
+                (item) => !this.currentQuestionIds.includes(item.id)
+            );
+
+            // limpiar contenido
+            this.historyList.textContent = "";
+
+            if (historyItems.length === 0) {
+                this.historyContainer.classList.add("hidden");
+                const li = document.createElement("li");
+                li.textContent = "Aún no has consultado preguntas.";
+                this.historyList.appendChild(li);
+                return;
+            }
+            this.historyContainer.classList.remove("hidden");
+            const fragment = document.createDocumentFragment();
+            historyItems.forEach((item) => {
+                const li = document.createElement("li");
+
+                // texto base
+                const text1 = document.createTextNode("Pregunta: ");
+                const questionText = document.createTextNode(item.question);
+                const separator = document.createTextNode(" | Respuesta: ");
+                const answerText = document.createTextNode(item.answer);
+
+                li.append(text1, questionText, separator, answerText);
+                fragment.appendChild(li);
+            });
+
+            this.historyList.appendChild(fragment);
+        },
+
+        clearQuestionHistory() {
+            this.viewedQuestions = [];
+            this.currentQuestionIds = [];
+            sessionStorage.removeItem(this.questionHistoryStorageKey);
+            this.loadFilteredQuestions();
+        },
+
+        handleAnswerToggle(event) {
+            const button = event.target.closest(".answer-btn");
+            if (!button) {
+                return;
+            }
+
+            const answer = button.getAttribute("data-answer") || "";
+            const isShowing = button.getAttribute("data-showing") === "true";
+
+            if (isShowing) {
+                button.textContent = "Mostrar respuesta";
+                button.setAttribute("data-showing", "false");
+            } else {
+                button.textContent = `Respuesta: ${answer}`;
+                button.setAttribute("data-showing", "true");
+            }
+        },
+
+        getCustomQuestionFromForm() {
+            const materia = this.customSubjectInput?.value || "";
+            const dificultad = this.customDifficultyInput?.value || "";
+            const pregunta = this.customQuestionInput?.value.trim() || "";
+            const opcionA = this.optionAInput?.value.trim() || "";
+            const opcionB = this.optionBInput?.value.trim() || "";
+            const opcionC = this.optionCInput?.value.trim() || "";
+            const correctLetter = this.correctOptionInput?.value || "A";
+            const options = [opcionA, opcionB, opcionC];
+            const correctIndex = { A: 0, B: 1, C: 2 }[correctLetter];
+            const respuestaCorrecta = options[correctIndex] || "";
+
+            return {
+                id: this.editingQuestionId || `custom-${Date.now()}`,
+                materia,
+                dificultad,
+                pregunta,
+                opciones: options,
+                respuestaCorrecta
+            };
+        },
+
+        validateCustomQuestion(question) {
+            const hasBaseData =
+                Boolean(question.materia) &&
+                Boolean(question.dificultad) &&
+                Boolean(question.pregunta);
+            const hasThreeOptions = question.opciones.length === 3 && question.opciones.every((opt) => Boolean(opt));
+            const uniqueOptions = new Set(question.opciones.map((opt) => opt.toLowerCase())).size === 3;
+            const hasCorrect = Boolean(question.respuestaCorrecta);
+            return hasBaseData && hasThreeOptions && uniqueOptions && hasCorrect;
+        },
+
+        handleGenerateQuestion() {
+            const question = this.getCustomQuestionFromForm();
+            if (!this.validateCustomQuestion(question)) {
+                this.showScriptMessage("Complete todos los campos. Las opciones no deben repetirse.", "error");
+                return;
+            }
+
+            this.renderQuestionPreview(question);
+            this.showScriptMessage("Previsualización generada. Puede editar o guardar.", "success");
+        },
+
+        renderQuestionPreview(question) {
+            if (!this.questionPreview) return;
+
+            this.previewQuestion = question;
+            // limpiar
+            this.questionPreview.textContent = "";
+            const article = document.createElement("article");
+            article.classList.add("question-card");
+
+            // título
+            const title = document.createElement("h3");
+            title.textContent = "Previsualización";
+
+            // pregunta
+            const text = document.createElement("p");
+            text.textContent = question.pregunta;
+
+            // opciones
+            const ul = document.createElement("ul");
+            question.opciones.forEach(option => {
+                const li = document.createElement("li");
+                li.textContent = option;
+                ul.appendChild(li);
+            });
+
+            // botón respuesta
+            const answerBtn = document.createElement("button");
+            answerBtn.classList.add("answer-btn");
+            answerBtn.type = "button";
+            answerBtn.dataset.answer = question.respuestaCorrecta;
+            answerBtn.textContent = "Mostrar respuesta";
+
+            // info (materia + dificultad)
+            const info = document.createElement("p");
+            const strongMateria = document.createElement("strong");
+            strongMateria.textContent = "Materia: ";
+            const strongDificultad = document.createElement("strong");
+            strongDificultad.textContent = "Dificultad: ";
+
+            info.append(
+                strongMateria,
+                question.materia,
+                " | ",
+                strongDificultad,
+                question.dificultad
+            );
+
+            // botón editar
+            const editBtn = document.createElement("button");
+            editBtn.classList.add("custom-question-btn", "edit-btn");
+            editBtn.type = "button";
+            editBtn.dataset.action = "edit-preview";
+            editBtn.textContent = "Editar";
+
+            // ensamblar
+            article.append(title, text, ul, answerBtn, info, editBtn);
+            this.questionPreview.appendChild(article);
+        },
+
+        handlePreviewActions(event) {
+            const actionBtn = event.target.closest("[data-action]");
+            if (!actionBtn) {
+                return;
+            }
+
+            const action = actionBtn.getAttribute("data-action");
+            if (action === "edit-preview") {
+                if (this.previewQuestion) {
+                    this.populateCustomQuestionForm(this.previewQuestion);
+                }
+                this.showScriptMessage("Puede modificar los campos y volver a generar o guardar.", "success");
+            }
+        },
+
+        handleCustomQuestionSave(event) {
+            event.preventDefault();
+
+            const question = this.getCustomQuestionFromForm();
+            if (!this.validateCustomQuestion(question)) {
+                this.showScriptMessage("No se puede guardar. Revise los campos del formulario.", "error");
+                return;
+            }
+
+            const storedQuestions = this.getStoredCustomQuestions();
+            const questionIndex = storedQuestions.findIndex((item) => item.id === question.id);
+
+            if (questionIndex >= 0) {
+                storedQuestions[questionIndex] = question;
+                this.showScriptMessage("Pregunta actualizada correctamente.", "success");
+            } else {
+                storedQuestions.unshift(question);
+                this.showScriptMessage("Pregunta guardada correctamente.", "success");
+            }
+
+            localStorage.setItem(this.customQuestionsStorageKey, JSON.stringify(storedQuestions));
+            this.editingQuestionId = null;
+            this.previewQuestion = null;
+            this.scriptForm?.reset();
+            if (this.questionPreview) {
+                this.questionPreview.innerHTML = "";
+            }
+            this.renderStoredCustomQuestions();
+            this.loadFilteredQuestions();
+        },
+
+        getStoredCustomQuestions() {
+            const rawData = localStorage.getItem(this.customQuestionsStorageKey);
+            if (!rawData) {
+                return [];
+            }
+
+            try {
+                const parsed = JSON.parse(rawData);
+                if (!Array.isArray(parsed)) {
+                    return [];
+                }
+
+                return parsed.filter(
+                    (item) =>
+                        typeof item?.id === "string" &&
+                        typeof item?.materia === "string" &&
+                        typeof item?.dificultad === "string" &&
+                        typeof item?.pregunta === "string" &&
+                        Array.isArray(item?.opciones) &&
+                        item.opciones.length === 3 &&
+                        typeof item?.respuestaCorrecta === "string"
+                );
+            } catch (_error) {
+                return [];
+            }
+        },
+
+        renderStoredCustomQuestions() {
+            if (!this.offlineGrid) return;
+
+            const questions = this.getStoredCustomQuestions();
+            // limpiar contenido
+            this.offlineGrid.textContent = "";
+
+            if (questions.length === 0) {
+                const article = document.createElement("article");
+                article.classList.add("script-card");
+
+                const title = document.createElement("h3");
+                title.textContent = "Sin preguntas guardadas";
+
+                const text = document.createElement("p");
+                text.textContent = "Aún no hay preguntas personalizadas en su dispositivo.";
+
+                article.append(title, text);
+                this.offlineGrid.appendChild(article);
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+
+            questions.forEach((question) => {
+                const article = document.createElement("article");
+                article.classList.add("question-card");
+
+                // título (pregunta)
+                const title = document.createElement("h3");
+                title.textContent = question.pregunta;
+
+                // lista de opciones
+                const ul = document.createElement("ul");
+                question.opciones.forEach((option) => {
+                    const li = document.createElement("li");
+                    li.textContent = option;
+                    ul.appendChild(li);
+                });
+
+                // info adicional
+                const info = document.createElement("p");
+
+                const strongMateria = document.createElement("strong");
+                strongMateria.textContent = "Materia: ";
+
+                const strongDificultad = document.createElement("strong");
+                strongDificultad.textContent = "Dificultad: ";
+
+                info.append(
+                    strongMateria,
+                    question.materia,
+                    " | ",
+                    strongDificultad,
+                    question.dificultad
+                );
+
+                // botón respuesta
+                const answerBtn = document.createElement("button");
+                answerBtn.classList.add("answer-btn");
+                answerBtn.type = "button";
+                answerBtn.dataset.answer = question.respuestaCorrecta;
+                answerBtn.textContent = "Mostrar respuesta";
+
+                // contenedor de acciones
+                const actionsDiv = document.createElement("div");
+                actionsDiv.classList.add("custom-question-actions");
+
+                // botón editar
+                const editBtn = document.createElement("button");
+                editBtn.classList.add("custom-question-btn", "edit-btn");
+                editBtn.type = "button";
+                editBtn.dataset.action = "edit-custom";
+                editBtn.dataset.id = question.id;
+                editBtn.textContent = "Editar";
+
+                // botón borrar
+                const deleteBtn = document.createElement("button");
+                deleteBtn.classList.add("custom-question-btn", "delete-btn");
+                deleteBtn.type = "button";
+                deleteBtn.dataset.action = "delete-custom";
+                deleteBtn.dataset.id = question.id;
+                deleteBtn.textContent = "Borrar";
+
+                actionsDiv.append(editBtn, deleteBtn);
+
+                article.append(title, ul, info, answerBtn, actionsDiv);
+                fragment.appendChild(article);
+            });
+
+            this.offlineGrid.appendChild(fragment);
+        },
+
+        handleOfflineGridActions(event) {
+            const actionBtn = event.target.closest("[data-action]");
+            if (!actionBtn) {
+                return;
+            }
+
+            const action = actionBtn.getAttribute("data-action");
+            const id = actionBtn.getAttribute("data-id");
+            if (!id) {
+                return;
+            }
+
+            if (action === "edit-custom") {
+                this.loadCustomQuestionForEditing(id);
+            } else if (action === "delete-custom") {
+                this.deleteCustomQuestion(id);
+            }
+        },
+
+        loadCustomQuestionForEditing(id) {
+            const questions = this.getStoredCustomQuestions();
+            const question = questions.find((item) => item.id === id);
+            if (!question) {
+                return;
+            }
+
+            this.editingQuestionId = question.id;
+            this.populateCustomQuestionForm(question);
+            this.renderQuestionPreview(question);
+            this.showSection("guiones");
+            this.updateActiveNavLink("guiones");
+            this.showScriptMessage("Pregunta cargada para edición.", "success");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+
+        populateCustomQuestionForm(question) {
+            if (this.customSubjectInput) this.customSubjectInput.value = question.materia;
+            if (this.customDifficultyInput) this.customDifficultyInput.value = question.dificultad;
+            if (this.customQuestionInput) this.customQuestionInput.value = question.pregunta;
+            if (this.optionAInput) this.optionAInput.value = question.opciones[0] || "";
+            if (this.optionBInput) this.optionBInput.value = question.opciones[1] || "";
+            if (this.optionCInput) this.optionCInput.value = question.opciones[2] || "";
+
+            let correctLetter = "A";
+            if (question.respuestaCorrecta === question.opciones[1]) {
+                correctLetter = "B";
+            } else if (question.respuestaCorrecta === question.opciones[2]) {
+                correctLetter = "C";
+            }
+            if (this.correctOptionInput) this.correctOptionInput.value = correctLetter;
+        },
+
+        deleteCustomQuestion(id) {
+            const updatedQuestions = this.getStoredCustomQuestions().filter((question) => question.id !== id);
+            localStorage.setItem(this.customQuestionsStorageKey, JSON.stringify(updatedQuestions));
+            this.viewedQuestions = this.viewedQuestions.filter((item) => item.id !== id);
+            this.saveViewedQuestions();
+            this.renderQuestionHistory();
+            this.renderStoredCustomQuestions();
+            this.loadFilteredQuestions();
+            this.showScriptMessage("Pregunta eliminada.", "success");
+        },
+
+        showScriptMessage(message, type) {
+            if (!this.scriptMessage) {
+                return;
+            }
+
+            this.scriptMessage.textContent = message;
+            this.scriptMessage.classList.remove("hidden", "success", "error");
+            this.scriptMessage.classList.add(type);
+        },
+
+        bindContactRealtimeValidation() {
+            this.contactNameInput?.addEventListener("input", () => {
+                this.validateContactName();
+                this.hideContactSuccess();
+            });
+
+            this.contactEmailInput?.addEventListener("input", () => {
+                this.validateContactEmail();
+                this.hideContactSuccess();
+            });
+
+            this.contactPhoneInput?.addEventListener("input", () => {
+                this.validateContactPhone();
+                this.hideContactSuccess();
+            });
+
+            this.contactMessageInput?.addEventListener("input", () => {
+                this.validateContactMessage();
+                this.hideContactSuccess();
+            });
+        },
+
+        handleContactSubmit(event) {
+            event.preventDefault();
+
+            const isNameValid = this.validateContactName();
+            const isEmailValid = this.validateContactEmail();
+            const isPhoneValid = this.validateContactPhone();
+            const isMessageValid = this.validateContactMessage();
+
+            if (!(isNameValid && isEmailValid && isPhoneValid && isMessageValid)) {
+                this.hideContactSuccess();
+                return;
+            }
+
+            emailjs.send("default_service", "template_ylarm9x", {
+                nombre: this.contactNameInput.value,
+                email: this.contactEmailInput.value,
+                mensaje: this.contactMessageInput.value
+            })
+            .then(() => {
+                if (this.contactSuccessBox) {
+                    this.contactSuccessBox.textContent = "Mensaje enviado correctamente.";
+                    this.contactSuccessBox.classList.remove("hidden", "error");
+                    this.contactSuccessBox.classList.add("success");
+                }
+
+                this.contactForm?.reset();
+                this.clearContactFieldStates();
+            })
+            .catch((error) => {
+                console.error("Error EmailJS:", error);
+
+                if (this.contactSuccessBox) {
+                    this.contactSuccessBox.textContent = "Error al enviar el mensaje.";
+                    this.contactSuccessBox.classList.remove("hidden", "success");
+                    this.contactSuccessBox.classList.add("error");
+                }
+            });
+        },
+
+        validateContactName() {
+            const value = this.contactNameInput?.value.trim() || "";
+            const pattern = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{3,}$/;
+            return this.validateField(this.contactNameInput, this.errorName, pattern.test(value));
+        },
+
+        validateContactEmail() {
+            const value = this.contactEmailInput?.value.trim() || "";
+            const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+            return this.validateField(this.contactEmailInput, this.errorEmail, pattern.test(value));
+        },
+
+        validateContactPhone() {
+            const value = this.contactPhoneInput?.value.trim() || "";
+            if (!value) {
+                return this.validateField(this.contactPhoneInput, this.errorPhone, true);
+            }
+
+            const pattern = /^\+\d{1,3}[\s-]?\d[\d\s-]{6,}$/;
+            return this.validateField(this.contactPhoneInput, this.errorPhone, pattern.test(value));
+        },
+
+        validateContactMessage() {
+            const value = this.contactMessageInput?.value.trim() || "";
+            return this.validateField(this.contactMessageInput, this.errorMsg, value.length >= 10);
+        },
+
+        validateField(input, errorElement, isValid) {
+            if (!input || !errorElement) {
+                return isValid;
+            }
+
+            input.classList.toggle("invalid", !isValid);
+            errorElement.style.display = isValid ? "none" : "block";
+            return isValid;
+        },
+
+        clearContactFieldStates() {
+            [
+                [this.contactNameInput, this.errorName],
+                [this.contactEmailInput, this.errorEmail],
+                [this.contactPhoneInput, this.errorPhone],
+                [this.contactMessageInput, this.errorMsg]
+            ].forEach(([input, error]) => {
+                if (input) {
+                    input.classList.remove("invalid");
+                }
+                if (error) {
+                    error.style.display = "none";
+                }
+            });
+        },
+
+        hideContactSuccess() {
+            if (!this.contactSuccessBox) {
+                return;
+            }
+
+            this.contactSuccessBox.classList.add("hidden");
+            this.contactSuccessBox.classList.remove("success", "error");
+            this.contactSuccessBox.textContent = "";
+        },
+
+        shuffleArray(items) {
+            const array = [...items];
+            for (let i = array.length - 1; i > 0; i -= 1) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        },
+
+        escapeHTML(value) {
+            return value
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#39;");
+        },
+
+        escapeAttribute(value) {
+            return this.escapeHTML(value);
         }
-    });
-
-    // Cargar del caché local si existe al iniciar la vista
-    const initialBackupStr = localStorage.getItem('edu_radio_questions_backup');
-    if (initialBackupStr) {
-        renderAPIQuestions(JSON.parse(initialBackupStr), container);
-        statusMsg.textContent = "Tus preguntas respaldadas offline (Última conexión).";
-        statusMsg.style.color = "var(--primary-color)";
-    }
-}
-
-function renderAPIQuestions(questionsArray, container) {
-    container.innerHTML = ''; // Limpiar grilla
-
-    questionsArray.forEach((item, index) => {
-        // Desencodificar base64 (El API lo envía así para evitar errores de render HTML)
-        const questionText = decodeURIComponent(escape(atob(item.question)));
-        const correctAnswerText = decodeURIComponent(escape(atob(item.correct_answer)));
-
-        const card = document.createElement('div');
-        card.className = 'question-card';
-        card.innerHTML = `
-            <h3>Pregunta ${index + 1}</h3>
-            <p style="font-size: 1.1em; margin-bottom: 1rem;">${questionText}</p>
-            
-            <button class="answer-btn" onclick="this.nextElementSibling.classList.toggle('hidden')">👁️ Revelar Respuesta a los Oyentes</button>
-            <div class="hidden" style="margin-top: 1rem; padding: 0.8rem; background-color: var(--bg-color); border-left: 3px solid var(--success-color); border-radius: 4px;">
-                <strong>Respuesta Correcta:</strong><br> ${correctAnswerText}
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-// Función auxiliar simple para evitar inyección en XSS
-function escapeHTML(str) {
-    return str.replace(/[&<>'"]/g,
-        tag => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            "'": '&#39;',
-            '"': '&quot;'
-        }[tag] || tag)
-    );
-}
+    };
+    emailjs.init({
+        publicKey: "a8GqGV31otrh2jChh"
+    })
+    document.addEventListener("DOMContentLoaded", () => RadioEduApp.init());
+})();
